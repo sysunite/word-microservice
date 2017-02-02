@@ -70,6 +70,9 @@ public class DataJSONInvoice {
     @SerializedName("localize")
     @Expose
     private Localize_ localize;
+    @SerializedName("image")
+    @Expose
+    private Image image;
 
     public String getTitle() {
         return title;
@@ -239,6 +242,14 @@ public class DataJSONInvoice {
         this.invoiceDetailText = invoiceDetailText;
     }
 
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "DataJSONInvoice{" +
@@ -263,6 +274,7 @@ public class DataJSONInvoice {
                 ", dataInvoiceReceiver=" + dataInvoiceReceiver +
                 ", invoiceDetail=" + invoiceDetail +
                 ", localize=" + localize +
+                ", image=" + image +
                 '}';
     }
 }

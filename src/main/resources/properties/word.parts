@@ -1,0 +1,12 @@
+# This properties file defines the relation between json and docx parts
+# The title heading 1
+word.parts.title=title
+word.parts.title-2=title-2
+word.parts.title-3=title-3
+word.parts.title-4=title-4
+word.parts.title-5=title-5
+word.parts.title-6=title-6
+word.parts.header=header
+word.parts.footer=footer
+word.parts.paragraph=paragraph
+word.parts.paragraph-r=paragraph-r

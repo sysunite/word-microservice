@@ -17,6 +17,7 @@ public class Props extends Properties {
   protected Props() {
     try {
       load(Resources.getResource("main.properties").openStream());
+      load(Resources.getResource("word.parts").openStream());
     } catch (IOException e) {
       logger.error(e.getMessage(), e);
     }

@@ -1,7 +1,7 @@
 # Excel Microservice
 Microservice for Word file manipulations using [Apache POI](https://poi.apache.org/).
 
-WIP 
+WIP
 
 
 *POST* http://localhost:9268/word/create?data=foo&fileName=bar.docx

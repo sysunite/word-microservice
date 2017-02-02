@@ -8,24 +8,20 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHdrFtr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.util.UUID;
 
 /**
- * Created by char on 31/01/17.
- *
- * Main class parsing the DataJSONInvoice class from json invoice object to docx document
- *  *
+ * Created by char on 02/02/17.
  */
-public class Invoice2Doc {
+public class CreateDocX {
 
-    static Logger logger = LoggerFactory.getLogger(Invoice2Doc.class);
 
-    public String createDocx(DataJSONInvoice dataJSONInvoice, String fileName) {
+    static Logger logger = LoggerFactory.getLogger(CreateDocX.class);
+
+    public String createDocx(String fileName) {
 
         String tempPath;
 
@@ -104,7 +100,7 @@ public class Invoice2Doc {
             rEmitter.addCarriageReturn();
             StringBuilder stringBank = new StringBuilder();
             stringBank.append("IBAN ")
-                .append(dataJSONInvoice.getDataInvoiceEmitter().getBankData().getIBAN());
+                    .append(dataJSONInvoice.getDataInvoiceEmitter().getBankData().getIBAN());
             rEmitter.setText(stringBank.toString());
             rEmitter.addCarriageReturn();
             stringBank = new StringBuilder();
@@ -309,4 +305,5 @@ public class Invoice2Doc {
 
         }
     }
+
 }
