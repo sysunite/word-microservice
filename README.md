@@ -78,3 +78,37 @@ WIP
     }
   }
 ```
+
+
+
+*POST* http://localhost:9268/poc/json?fileName=foo
+
+```
+{
+	"title":"Main title, heading 1",
+	"paragraph":"This is a paragraph, a normal one, align to the left is the default.",
+	"paragraph":"This is other paragraph.",
+	"title-2":"This is heading 2",
+	"abecd":"other thing, that never will go to the DocX cose abecd does not means anythig",
+	"title-3":"This is heading 3",
+	"footer":"This is the Footer",
+	"header":"This is a Header",
+	"title-4":"This is heading 4",
+	"title":"Other heading 1",
+	"paragraph-right":"This is a paragraph with right align.",
+	"paragraph-right-bold":"This is a bold paragraph with right align.",
+	"paragraph-right-italic":"This is an italic paragraph with right align.",
+	"paragraph-right-bold-italic":"This is an italic and bold paragraph with right align.",
+	"title-5":"This is heading 5",
+	"paragraph":"Other paragraph",
+	"paragraph-bold":"A bold paragraph",
+	"paragraph-italic":"An italic paragraph",
+	"paragraph-bold-italic":"A bold and italic paragraph",
+	"paragraph-italic-bold":"An italic bold paragraph",
+	"title-6":"This is heading 6",
+	"paragraph-center":"This is a centered paragraph",
+	"paragraph-center-bold":"This is a centered and bold paragraph",
+	"paragraph-center-italic":"This is a centered and italic paragraph",
+	"paragraph-center-bold-italic":"This is a centered and italic paragraph"
+}
+```

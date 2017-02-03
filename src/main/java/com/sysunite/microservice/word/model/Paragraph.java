@@ -14,22 +14,45 @@ public class Paragraph {
     /**
      * Creates a Header
      */
-    public static void create(XWPFDocument doc, String paragraph, String align) throws Exception {
+    public static void create(
+            XWPFDocument doc,
+            String paragraph,
+            String align,
+            Boolean bold,
+            Boolean italic,
+            String font
+    ) throws Exception {
 
         if (paragraph.isEmpty()) {
             throw new Exception("The paragraph is empty");
         }
 
-        try {
-            logger.debug(paragraph);
-            XWPFParagraph paragraphDoc = doc.createParagraph();
-            paragraphDoc.setAlignment(align.equals("r")?ParagraphAlignment.RIGHT:ParagraphAlignment.LEFT);
+//        try {
+        XWPFParagraph paragraphDoc = doc.createParagraph();
+//        paragraphDoc.setAlignment(align.equals("r") ? ParagraphAlignment.RIGHT : ParagraphAlignment.LEFT);
 
-            XWPFRun rGeneral = paragraphDoc.createRun();
-            rGeneral.setText(paragraph);
-        } catch (Exception e) {
-            logger.error(e.getLocalizedMessage());
+        switch (align) {
+            case "right":
+                paragraphDoc.setAlignment(ParagraphAlignment.RIGHT);
+                break;
+            case "center":
+                paragraphDoc.setAlignment(ParagraphAlignment.CENTER);
+                break;
+            case "left":
+                paragraphDoc.setAlignment(ParagraphAlignment.LEFT);
+                break;
         }
+
+        XWPFRun rGeneral = paragraphDoc.createRun();
+        rGeneral.setBold(bold);
+        rGeneral.setItalic(italic);
+        if (font != null) {
+            rGeneral.setFontFamily(font);
+        }
+        rGeneral.setText(paragraph);
+//        } catch (Exception e) {
+//            logger.error(e.getLocalizedMessage());
+//        }
 
     }
 
