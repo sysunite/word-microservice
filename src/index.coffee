@@ -5,6 +5,7 @@ logger = require('./util/logger')
 express = require('express')
 pckjsn = require('../package.json')
 multer = require('multer')
+path = require('path')
 
 port = config.get('server.port')
 
@@ -31,7 +32,7 @@ app.all('*', (req, res, next) ->
 )
 
 
-app.get('/', (req, res) ->
+app.get('/about', (req, res) ->
   res.send("#{pckjsn.name} - #{pckjsn.version}")
 )
 
@@ -40,7 +41,7 @@ app.get('/', (req, res) ->
  for future calls
 ###
 
-app.post('/template/add', upload.single('fileName'), (req, res, next) ->
+app.post('/template/add', upload.single('template'), (req, res, next) ->
   if req.fileValidationExtension
     res.status(400).send(req.fileValidationExtension)
   else
@@ -52,11 +53,25 @@ app.post('/template/add', upload.single('fileName'), (req, res, next) ->
 ###
 
 app.get('/template/get', (req, res) ->
-  res.send('Hi there!')
+  # logger.debug(req.query.templateId)
+  # logger.debug(req.query.fileName)
+  # res.send('lol')
+  if !req.query.templateId or !req.query.fileName
+    res.status(400).send('The templateId and fileName params are mandatory on the query')
+  else
+    try
+      file = path.join(__dirname, "../files/#{req.query.templateId}")
+      logger.debug(file)
+      res.set('Content-disposition', 'attachment; filename=' + req.query.fileName)
+      res.download(file)
+    catch error
+      
+    
 )
 
 ###
- Inject data into docx file according to a previously added template
+ Inject data into docx file according to a previously added template.
+ And returns the generated word file.
 ###
 
 app.post('/docx/inject', (req, res) ->
