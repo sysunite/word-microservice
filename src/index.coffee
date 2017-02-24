@@ -6,6 +6,7 @@ express = require('express')
 pckjsn = require('../package.json')
 multer = require('multer')
 path = require('path')
+fs = require('fs')
 
 port = config.get('server.port')
 
@@ -53,19 +54,21 @@ app.post('/template/add', upload.single('template'), (req, res, next) ->
 ###
 
 app.get('/template/get', (req, res) ->
-  # logger.debug(req.query.templateId)
-  # logger.debug(req.query.fileName)
-  # res.send('lol')
   if !req.query.templateId or !req.query.fileName
     res.status(400).send('The templateId and fileName params are mandatory on the query')
   else
     try
       file = path.join(__dirname, "../files/#{req.query.templateId}")
       logger.debug(file)
-      res.set('Content-disposition', 'attachment; filename=' + req.query.fileName)
-      res.download(file)
+      fs.access(file, (err) ->
+        if !err
+          res.set('Content-disposition', 'attachment; filename=' + req.query.fileName)
+          res.download(file)
+        else
+          res.status(400).send("The requested templateId #{req.query.templateId} does not exits")
+      )
     catch error
-      
+      res.status(400).send("Unknown error")
     
 )
 

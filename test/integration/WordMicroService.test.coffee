@@ -5,10 +5,12 @@ config    = require('./../config/test')
 img      = require('./data/imgBufferData')
 path = require('path')
 pckjson   = require('./../../package.json')
+fs = require('fs')
 
 
 wordMicroservice = supertest.agent("http://#{config.server.ip}:#{config.server.port}")
 fileId = ''
+testFile = path.join(__dirname,'./data/test.docx')
 
 describe 'word-microservice rest-API test', ->
   
@@ -22,7 +24,6 @@ describe 'word-microservice rest-API test', ->
       
 
   it 'should create a new template', ->
-    testFile = path.join(__dirname,'./data/test.docx')
     wordMicroservice
     .post('/template/add')
     .field('fileName', 'test.dox')
@@ -35,33 +36,51 @@ describe 'word-microservice rest-API test', ->
     
 
   it 'should fails because the template add endpoint only accpets *.docx files format', ->
-    testFile = path.join(__dirname,'./data/imgBufferData.coffee')
+    testDoomyFile = path.join(__dirname,'./data/imgBufferData.coffee')
     wordMicroservice
     .post('/template/add')
     .field('fileName', 'test.dox')
-    .attach('template', testFile)
+    .attach('template', testDoomyFile)
     .expect(400)
     .then((res) ->
       res.text.should.eql('The only valid extension and format for templates are docx')
     )
-    
+  
   it 'should retrieve a previous template by the Id', ->
     wordMicroservice
-    .get("/template/get?templateId=#{fileId}&fileName=templateDownloaded.docx")
+    .get("/template/get?templateId=#{fileId}&fileName=#{fileId}")
     .expect(200)
     .then((res) ->
-      console.log res
+      fs.readFile(testFile, (err, data) ->
+        data.should.eql(res.body)
+      )
     )
-      
-  it 'should fails retrieve a previous template by incorrect Id', ->
+  
+  it 'should fails retrieve a previous template by an incorrect Id', ->
     wordMicroservice
     .get("/template/get?templateId=55555&fileName=templateDownloaded.docx")
     .expect(400)
     .then((res) ->
-      res.text.should.eql("The requested templateId #{req.query.templateId} does not exits")
+      res.text.should.eql("The requested templateId 55555 does not exits")
     )
-    
-    
+  
+  it 'should fails retrieve a previous template because there is no templateId param provide', ->
+    wordMicroservice
+    .get("/template/get?fileName=templateDownloaded.docx")
+    .expect(400)
+    .then((res) ->
+      res.text.should.eql('The templateId and fileName params are mandatory on the query')
+    )
+  
+  it 'should fails retrieve a previous template because there is no fileName param provide', ->
+    wordMicroservice
+    .get("/template/get?templateId=55555")
+    .expect(400)
+    .then((res) ->
+      res.text.should.eql('The templateId and fileName params are mandatory on the query')
+    )
+  
+  
   it 'should inject data for the template and download the result', ->
     wordMicroservice
     .post('/docx/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx')
@@ -69,9 +88,9 @@ describe 'word-microservice rest-API test', ->
     .send('{jsonData}')
     .expect(200)
     .then((res) ->
-      console.log res
+      lol(false)
     )
-    
+  
   it 'should fails the inject data for the template and download the result, because the file does not exits', ->
     wordMicroservice
     .post("/docx/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
@@ -79,15 +98,15 @@ describe 'word-microservice rest-API test', ->
     .send('{jsonData}')
     .expect(200)
     .then((res) ->
-      console.log res
+      lol(false)
     )
-      
+  
   it 'should fails the inject data for the template and download the result, because there is no data send to fill the template', ->
     wordMicroservice
     .post("/docx/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
     .type('json')
     .expect(200)
     .then((res) ->
-      console.log res
+      lol(false)
     )
     
