@@ -7,6 +7,8 @@ pckjsn = require('../package.json')
 multer = require('multer')
 path = require('path')
 fs = require('fs')
+bodyParser = require('body-parser')
+DocXTemplater = require('./DocXTemplater')
 
 port = config.get('server.port')
 
@@ -32,6 +34,7 @@ app.all('*', (req, res, next) ->
   next()
 )
 
+app.use(bodyParser.json())
 
 app.get('/about', (req, res) ->
   res.send("#{pckjsn.name} - #{pckjsn.version}")
@@ -78,7 +81,34 @@ app.get('/template/get', (req, res) ->
 ###
 
 app.post('/docx/inject', (req, res) ->
-  res.send('Hi there!')
+  logger.debug(req.body)
+  if !req.query.templateId or !req.query.fileName or !req.body
+    res.status(400).send('The templateId, fileName or templateData are mandatory on the query')
+  else
+    try
+      file = path.join(__dirname, "../files/#{req.query.templateId}")
+      logger.debug(file)
+      fs.access(file, (err) ->
+        if !err
+          DocXTemplater.generateDocXFromTemplate(file,req.body)
+          .then((pathTemplate) ->
+            logger.debug(pathTemplate)
+            res.set('Content-disposition', 'attachment; filename=' + req.query.fileName)
+            # res.download(pathTemplate)
+            # TODO: problem sending the generated file on the body... is sending on res.text
+            res.sendFile(pathTemplate)
+            # res.download(pathTemplate, (err) ->
+            #   DocXTemplater.cleanGeneratedDocX(pathTemplate)
+            # )
+          ).catch((err) ->
+            logger.error(err)
+            res.status(400).send("Unknown error")
+          )
+        else
+          res.status(400).send("The requested templateId #{req.query.templateId} does not exits")
+      )
+    catch error
+      res.status(400).send("Unknown error")
 )
 
 app.listen(port, ->

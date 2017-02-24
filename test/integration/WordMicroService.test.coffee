@@ -83,30 +83,31 @@ describe 'word-microservice rest-API test', ->
   
   it 'should inject data for the template and download the result', ->
     wordMicroservice
-    .post('/docx/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx')
-    .type('json')
-    .send('{jsonData}')
+    .post("/docx/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
+    # .type('json')
+    # .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
     .expect(200)
     .then((res) ->
-      lol(false)
+      console.log res.text
+      console.log res.body
     )
   
   it 'should fails the inject data for the template and download the result, because the file does not exits', ->
     wordMicroservice
     .post("/docx/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
     .type('json')
-    .send('{jsonData}')
-    .expect(200)
+    .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
+    .expect(400)
     .then((res) ->
-      lol(false)
+      res.text.should.eql("The requested templateId 555555 does not exits")
     )
   
   it 'should fails the inject data for the template and download the result, because there is no data send to fill the template', ->
     wordMicroservice
-    .post("/docx/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
+    .post("/docx/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
     .type('json')
-    .expect(200)
+    .expect(400)
     .then((res) ->
-      lol(false)
+      res.text.should.eql('The templateId, fileName or templateData are mandatory on the query')
     )
-    
+  
