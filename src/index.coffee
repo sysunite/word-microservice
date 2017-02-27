@@ -1,4 +1,3 @@
-
 Pomise = require('bluebird')
 config = require('config')
 logger = require('./util/logger')
@@ -62,10 +61,9 @@ app.get('/template/get', (req, res) ->
   else
     try
       file = path.join(__dirname, "../files/#{req.query.templateId}")
-      logger.debug(file)
       fs.access(file, (err) ->
         if !err
-          res.set('Content-disposition', 'attachment; filename=' + req.query.fileName)
+          res.set('Content-Disposition', 'attachment; filename=' + req.query.fileName)
           res.download(file)
         else
           res.status(400).send("The requested templateId #{req.query.templateId} does not exits")
@@ -80,28 +78,21 @@ app.get('/template/get', (req, res) ->
  And returns the generated word file.
 ###
 
-app.post('/docx/inject', (req, res) ->
-  logger.debug(req.body)
-  if !req.query.templateId or !req.query.fileName or !req.body
-    res.status(400).send('The templateId, fileName or templateData are mandatory on the query')
+app.post('/word/inject', (req, res) ->
+  if !req.query.templateId or !req.query.fileName or Object.keys(req.body).length is 0
+    res.status(400).send('The templateId and fileName and data for the template are mandatory on the query')
   else
     try
       file = path.join(__dirname, "../files/#{req.query.templateId}")
-      logger.debug(file)
       fs.access(file, (err) ->
         if !err
           DocXTemplater.generateDocXFromTemplate(file,req.body)
           .then((pathTemplate) ->
-            logger.debug(pathTemplate)
-            res.set('Content-disposition', 'attachment; filename=' + req.query.fileName)
-            # res.download(pathTemplate)
-            # TODO: problem sending the generated file on the body... is sending on res.text
-            res.sendFile(pathTemplate)
-            # res.download(pathTemplate, (err) ->
-            #   DocXTemplater.cleanGeneratedDocX(pathTemplate)
-            # )
+            res.set('Content-Disposition', 'attachment; filename=' + req.query.fileName)
+            fs.readFile(pathTemplate, (err, data) ->
+              res.send(data)
+            )
           ).catch((err) ->
-            logger.error(err)
             res.status(400).send("Unknown error")
           )
         else

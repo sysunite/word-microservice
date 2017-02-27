@@ -6,6 +6,7 @@ img      = require('./data/imgBufferData')
 path = require('path')
 pckjson   = require('./../../package.json')
 fs = require('fs')
+bufferSplice = require('buffer-splice')
 
 
 wordMicroservice = supertest.agent("http://#{config.server.ip}:#{config.server.port}")
@@ -21,8 +22,8 @@ describe 'word-microservice rest-API test', ->
     .then((res) ->
       res.text.should.eql(pckjson.name + ' - ' + pckjson.version)
     )
-      
-
+  
+  
   it 'should create a new template', ->
     wordMicroservice
     .post('/template/add')
@@ -33,8 +34,8 @@ describe 'word-microservice rest-API test', ->
       fileId = res.text
       res.text.should.type('string')
     )
-    
-
+  
+  
   it 'should fails because the template add endpoint only accpets *.docx files format', ->
     testDoomyFile = path.join(__dirname,'./data/imgBufferData.coffee')
     wordMicroservice
@@ -79,35 +80,41 @@ describe 'word-microservice rest-API test', ->
     .then((res) ->
       res.text.should.eql('The templateId and fileName params are mandatory on the query')
     )
-  
-  
+    
   it 'should inject data for the template and download the result', ->
     wordMicroservice
-    .post("/docx/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
-    # .type('json')
-    # .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
+    .post("/word/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
+    .type('json')
+    .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
     .expect(200)
     .then((res) ->
-      console.log res.text
-      console.log res.body
+      testDocx = path.join(__dirname,'./data/word.docx')
+      fs.readFile(testDocx, (err, data) ->
+        # There just 4 bytes of differences between downloaded and local we need to remove those to compare
+        aBuffer = bufferSplice(data, 1929,2)
+        bBuffer = bufferSplice(res.body, 1929, 2)
+        aBuffer = bufferSplice(aBuffer, 29564,2)
+        bBuffer = bufferSplice(bBuffer, 29564, 2)
+        aBuffer.should.eql(bBuffer)
+      )
     )
-  
+    
   it 'should fails the inject data for the template and download the result, because the file does not exits', ->
     wordMicroservice
-    .post("/docx/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
+    .post("/word/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
     .type('json')
     .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
     .expect(400)
     .then((res) ->
       res.text.should.eql("The requested templateId 555555 does not exits")
     )
-  
+    
+    
   it 'should fails the inject data for the template and download the result, because there is no data send to fill the template', ->
     wordMicroservice
-    .post("/docx/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
+    .post("/word/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
     .type('json')
     .expect(400)
     .then((res) ->
-      res.text.should.eql('The templateId, fileName or templateData are mandatory on the query')
+      res.text.should.eql('The templateId and fileName and data for the template are mandatory on the query')
     )
-  

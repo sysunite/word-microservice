@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "blanket": "^1.2.3",
+    "buffer-splice": "^1.0.0",
     "chai": "^3.0.0",
     "chai-as-promised": "^5.1.0",
     "coffee-coverage": "^1.0.1",
