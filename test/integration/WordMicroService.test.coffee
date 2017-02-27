@@ -52,7 +52,6 @@ describe 'word-microservice rest-API test', ->
     .attach('filename', testDoomyFile)
     .expect(500)
     .then((res) ->
-      console.log res.error.text
       res.error.text.should.startWith('Error: Unexpected field')
     )
   
