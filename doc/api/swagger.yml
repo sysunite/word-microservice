@@ -1,0 +1,141 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: weaver-server
+  description: The endpoint to the word-microservice.
+  version: "1.0.0"
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /
+paths:
+# General
+  /about:
+    get:
+      tags:
+        - General
+      summary: Service Information
+      description: |
+        Basic versioning information about the service.
+      responses:
+        200:
+          description: Version fo product
+          schema:
+            $ref: '#/definitions/About'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+# Template actions
+
+  /template/add:
+    post:
+      tags:
+        - Template actions
+      summary: Uploads a new word docx template
+      description: |
+        Uploads a new word docx template and retireve the id of this template for further actions
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: template
+          in: formData
+          description: The word docx file.
+          required: true
+          type: file
+      responses:
+        200:
+          description: The new ID for the uploaded template.
+          schema:
+            $ref: '#/definitions/AddResponse'
+        400:
+          description: The only valid extension and format for templates are docx
+          type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /template/get:
+    get:
+      tags:
+        - Template actions
+      summary: Retrieves a previous uploaded word docx template
+      description: |
+        Downloads a previous added word docx template.
+        Due to some swagger issues 'https://github.com/swagger-api/swagger-ui/issues/2132' please use curl to test this endpoint.
+      produces:
+        - multipart/form-data
+      parameters:
+        - name: templateId
+          in: query
+          description: The ID of the uploaded template
+          required: true
+          type: string
+        - name: fileName
+          in: query
+          description: The name for the downloaded template
+          required: true
+          type: string
+      responses:
+        200:
+          description: The docx word template.
+          schema:
+            type: "file"
+        400:
+          description: The templateId and fileName params are mandatory on the query.
+          type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /word/inject:
+    post:
+      operationId: "Inject"
+      tags:
+        - Template actions
+      summary: Download word docx from previous uploaded template
+      description: |
+        Injects the values for the template and downloads the word docx document.
+        Due to some swagger issues 'https://github.com/swagger-api/swagger-ui/issues/2132' please use curl to test this endpoint.
+        Use this json for the curl command (copy & paste to the body field) in one line data instead the one at the example '{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}' If you wondering why this, take a look to 'https://github.com/swagger-api/swagger-js/issues/947' (this issue, I think that will be fix soon, there is a PR)
+      produces:
+        - multipart/form-data
+      parameters:
+        - name: "templateId"
+          in: "query"
+          description: "The ID of the uploaded template"
+          required: true
+          type: "string"
+        - name: "fileName"
+          in: "query"
+          description: "The name for the downloaded template"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: true
+          type: json
+          schema:
+            $ref: '#/definitions/TemplateData'
+
+definitions:
+  Error:
+    type: string
+  About:
+    type: string
+    example: word-microservice - 1.0.0
+  AddResponse:
+    type: string
+    example: 3b8d37cad01ddf54c36708f4ca73a0ea
+  TemplateData:
+    type: object
+    example: {"name": "Davinel Lulinvega","test": "Foo","normal_something": "bar","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}
+        
+      
+      

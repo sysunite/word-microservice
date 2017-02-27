@@ -11,7 +11,7 @@ bufferSplice = require('buffer-splice')
 
 wordMicroservice = supertest.agent("http://#{config.server.ip}:#{config.server.port}")
 fileId = ''
-testFile = path.join(__dirname,'./data/test.docx')
+testFile = path.join(__dirname,'./data/testTemplate.docx')
 
 describe 'word-microservice rest-API test', ->
   
@@ -27,7 +27,6 @@ describe 'word-microservice rest-API test', ->
   it 'should create a new template', ->
     wordMicroservice
     .post('/template/add')
-    .field('fileName', 'test.dox')
     .attach('template', testFile)
     .expect(200)
     .then((res) ->
@@ -40,11 +39,21 @@ describe 'word-microservice rest-API test', ->
     testDoomyFile = path.join(__dirname,'./data/imgBufferData.coffee')
     wordMicroservice
     .post('/template/add')
-    .field('fileName', 'test.dox')
     .attach('template', testDoomyFile)
     .expect(400)
     .then((res) ->
       res.text.should.eql('The only valid extension and format for templates are docx')
+    )
+  
+  it 'should fails because the name for the attached file is not template', ->
+    testDoomyFile = path.join(__dirname,'./data/imgBufferData.coffee')
+    wordMicroservice
+    .post('/template/add')
+    .attach('filename', testDoomyFile)
+    .expect(500)
+    .then((res) ->
+      console.log res.error.text
+      res.error.text.should.startWith('Error: Unexpected field')
     )
   
   it 'should retrieve a previous template by the Id', ->
@@ -81,35 +90,30 @@ describe 'word-microservice rest-API test', ->
       res.text.should.eql('The templateId and fileName params are mandatory on the query')
     )
     
+  
+
   it 'should inject data for the template and download the result', ->
+    this.timeout(4000)
     wordMicroservice
     .post("/word/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
     .type('json')
-    .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
+    .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "bar","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
     .expect(200)
     .then((res) ->
-      testDocx = path.join(__dirname,'./data/word.docx')
-      fs.readFile(testDocx, (err, data) ->
-        # There just 4 bytes of differences between downloaded and local we need to remove those to compare
-        aBuffer = bufferSplice(data, 1929,2)
-        bBuffer = bufferSplice(res.body, 1929, 2)
-        aBuffer = bufferSplice(aBuffer, 29564,2)
-        bBuffer = bufferSplice(bBuffer, 29564, 2)
-        aBuffer.should.eql(bBuffer)
-      )
+      testDocx = path.join(__dirname,'./data/wordOutput.docx')
+      # Deleting some differences from the Buffer
+      fileraw = fs.readFileSync(testDocx)
+      aBuffer = bufferSplice(fileraw, 1929,2)
+      bBuffer = bufferSplice(res.body, 1929, 2)
+      aBuffer = bufferSplice(aBuffer, 1931,4)
+      bBuffer = bufferSplice(bBuffer, 1931, 4)
+      aBuffer = bufferSplice(aBuffer, 3532,4)
+      bBuffer = bufferSplice(bBuffer, 3532, 4)
+      aBuffer = bufferSplice(aBuffer, 29556,8)
+      bBuffer = bufferSplice(bBuffer, 29556, 8)
+      aBuffer.should.eql(bBuffer)
     )
-    
-  it 'should fails the inject data for the template and download the result, because the file does not exits', ->
-    wordMicroservice
-    .post("/word/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
-    .type('json')
-    .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "lol","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
-    .expect(400)
-    .then((res) ->
-      res.text.should.eql("The requested templateId 555555 does not exits")
-    )
-    
-    
+  
   it 'should fails the inject data for the template and download the result, because there is no data send to fill the template', ->
     wordMicroservice
     .post("/word/inject?templateId=#{fileId}&fileName=newDocumentDownloaded.docx")
@@ -118,3 +122,14 @@ describe 'word-microservice rest-API test', ->
     .then((res) ->
       res.text.should.eql('The templateId and fileName and data for the template are mandatory on the query')
     )
+  
+  it 'should fails the inject data for the template and download the result, because the file does not exits', ->
+    wordMicroservice
+    .post("/word/inject?templateId=555555&fileName=newDocumentDownloaded.docx")
+    .type('json')
+    .send('{"name": "Davinel Lulinvega","test": "Foo","normal_something": "bar","isNumber": true,"number": 5,"artists": [{"name": "Beck", "band": "Beck"},{"name": "Jim Morrison", "band": "The Doors"},{"name": "Thorston Moore", "band": "Sonic Youth"}],"parts": [{"name":"screen", "price":56.45, "possition":"top"},{"name":"battery", "price":25, "possition":"inside"}]}')
+    .expect(400)
+    .then((res) ->
+      res.text.should.eql("The requested templateId 555555 does not exits")
+    )
+    

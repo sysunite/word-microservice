@@ -18,6 +18,7 @@ upload = multer({ dest: 'files/', fileFilter: (req, file, cb) ->
     cb(null, false)
   else
     cb(null, true)
+  
 })
 
 app = express()
@@ -34,6 +35,8 @@ app.all('*', (req, res, next) ->
 )
 
 app.use(bodyParser.json())
+
+app.use('/doc', express.static('doc'))
 
 app.get('/about', (req, res) ->
   res.send("#{pckjsn.name} - #{pckjsn.version}")
@@ -91,6 +94,7 @@ app.post('/word/inject', (req, res) ->
             res.set('Content-Disposition', 'attachment; filename=' + req.query.fileName)
             fs.readFile(pathTemplate, (err, data) ->
               res.send(data)
+              DocXTemplater.cleanGeneratedDocX(pathTemplate)
             )
           ).catch((err) ->
             res.status(400).send("Unknown error")
