@@ -1,13 +1,13 @@
 {
   "name": "word-microservice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Microservice for Word file manipulations using [docxtemplater](https://github.com/open-xml-templating/docxtemplater).",
   "main": "lib/index.js",
   "license": "GPL-3.0",
   "scripts": {
     "start": "./node_modules/coffee-script/bin/coffee src/index.coffee",
-    "prepublish": "./node_modules/coffee-script/bin/coffee -o lib -c src && echo '#!/usr/bin/env node' | cat - ./lib/index.js > ./lib/index-exe.js && mv ./lib/index-exe.js ./lib/index.js",
-    "test": "./node_modules/.bin/mocha && ./node_modules/.bin/istanbul report"
+    "prepublish": "./node_modules/coffee-script/bin/coffee -o lib -c src",
+    "test": "istanbul cover _mocha --"
   },
   "repository": {
     "type": "git",

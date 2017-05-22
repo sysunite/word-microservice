@@ -1,0 +1,10 @@
+version: '2'
+services:
+  excel-microservice:
+    image: sysunite/word-microservice:1.0.1
+    mem_limit: 6096m
+    restart: on-failure
+    expose:
+      - "9268"
+    ports:
+      - "9268:9268"

@@ -50,10 +50,7 @@ app.get('/about', (req, res) ->
 
 app.post('/template/add', upload.single('template'), (req, res, next) ->
   if req.fileValidationExtension
-    logger.debug('Not valid extension WTF!!!!!!')
-    logger.debug(req.fileValidationExtension)
     res.status(400).send(req.fileValidationExtension)
-    # res.send(req.fileValidationExtension)
   else
     res.send(req.file.filename)
 )

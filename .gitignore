@@ -5,3 +5,4 @@ lib/
 filesTmp/
 .~*
 test/integration/data/wordOutputServ.docx
+coverage/
