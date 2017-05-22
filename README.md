@@ -1,7 +1,7 @@
 # Word Microservice
 Microservice for Word file manipulations using [docxtemplater](https://github.com/open-xml-templating/docxtemplater).
 
-Swagger API documentation at http://localhost:9267/doc/api
+Swagger API documentation at http://localhost:9268/doc/api
 
 ## Endpoints
 

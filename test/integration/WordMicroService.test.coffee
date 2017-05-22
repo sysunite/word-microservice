@@ -45,15 +45,6 @@ describe 'word-microservice rest-API test', ->
       res.text.should.eql('The only valid extension and format for templates are docx')
     )
   
-  it 'should fails because the name for the attached file is not template', ->
-    testDoomyFile = path.join(__dirname,'./data/imgBufferData.coffee')
-    wordMicroservice
-    .post('/template/add')
-    .attach('filename', testDoomyFile)
-    .expect(500)
-    .then((res) ->
-      res.error.text.should.startWith('Error: Unexpected field')
-    )
   
   it 'should retrieve a previous template by the Id', ->
     wordMicroservice
@@ -100,16 +91,16 @@ describe 'word-microservice rest-API test', ->
     .expect(200)
     .then((res) ->
       testDocx = path.join(__dirname,'./data/wordOutput.docx')
+      file = path.join(__dirname,'./data/wordOutputServ.docx')
       # Deleting some differences from the Buffer
       fileraw = fs.readFileSync(testDocx)
-      aBuffer = bufferSplice(fileraw, 1929,2)
-      bBuffer = bufferSplice(res.body, 1929, 2)
-      aBuffer = bufferSplice(aBuffer, 1931,4)
-      bBuffer = bufferSplice(bBuffer, 1931, 4)
-      aBuffer = bufferSplice(aBuffer, 3532,4)
-      bBuffer = bufferSplice(bBuffer, 3532, 4)
-      aBuffer = bufferSplice(aBuffer, 29556,8)
-      bBuffer = bufferSplice(bBuffer, 29556, 8)
+      fs.writeFileSync(file,res.body)
+      aBuffer = bufferSplice(fileraw, 1929,12)
+      bBuffer = bufferSplice(res.body, 1929, 12)
+      aBuffer = bufferSplice(aBuffer, 3526, 12)
+      bBuffer = bufferSplice(bBuffer, 3526, 12 )
+      aBuffer = bufferSplice(aBuffer, 29542, 12)
+      bBuffer = bufferSplice(bBuffer, 29542, 12)
       aBuffer.should.eql(bBuffer)
     )
   

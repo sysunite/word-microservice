@@ -14,6 +14,7 @@ port = config.get('server.port')
 upload = multer({ dest: 'files/', fileFilter: (req, file, cb) ->
   logger.debug(file.originalname.split('.')[1])
   if file.originalname.split('.')[1] isnt 'docx'
+    logger.debug('This think is not a valid format extension')
     req.fileValidationExtension = 'The only valid extension and format for templates are docx'
     cb(null, false)
   else
@@ -49,7 +50,10 @@ app.get('/about', (req, res) ->
 
 app.post('/template/add', upload.single('template'), (req, res, next) ->
   if req.fileValidationExtension
+    logger.debug('Not valid extension WTF!!!!!!')
+    logger.debug(req.fileValidationExtension)
     res.status(400).send(req.fileValidationExtension)
+    # res.send(req.fileValidationExtension)
   else
     res.send(req.file.filename)
 )

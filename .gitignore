@@ -3,3 +3,5 @@ files/
 node_modules
 lib/
 filesTmp/
+.~*
+test/integration/data/wordOutputServ.docx

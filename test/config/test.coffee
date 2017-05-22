@@ -6,5 +6,5 @@
 module.exports =
   server:
     ip: 'localhost'
-    port: 9267
+    port: 9268
     

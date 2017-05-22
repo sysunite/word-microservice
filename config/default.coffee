@@ -1,7 +1,7 @@
 module.exports =
   
   server:
-    port: 9267
+    port: 9268
 
   logging:
     console: 'error'
