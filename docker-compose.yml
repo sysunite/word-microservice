@@ -1,10 +1,13 @@
 version: '2'
 services:
-  excel-microservice:
-    image: sysunite/word-microservice:1.0.1
-    mem_limit: 6096m
+  word-microservice:
+    image: sysunite/word-microservice:1.0.2
+    mem_limit: 3096m
     restart: on-failure
     expose:
       - "9268"
     ports:
       - "9268:9268"
+    volumes:
+      - './volumes/word-microservice/files:/usr/src/app/files'
+      - './volumes/word-microservice/filesTmp:/usr/src/app/filesTmp'
