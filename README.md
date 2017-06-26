@@ -3,6 +3,12 @@ Microservice for Word file manipulations using [docxtemplater](https://github.co
 
 Swagger API documentation at http://localhost:9268/doc/api
 
+## Running
+
+You can use Docker:
+
+`docker pull sysunite/word-microservice`
+
 ## Endpoints
 
 **GET** `/about`
