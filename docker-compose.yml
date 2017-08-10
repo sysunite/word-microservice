@@ -1,7 +1,7 @@
 version: '2'
 services:
   word-microservice:
-    image: sysunite/word-microservice:1.0.2
+    image: sysunite/word-microservice:1.0.3
     mem_limit: 3096m
     restart: on-failure
     expose:

@@ -1,6 +1,6 @@
 {
   "name": "word-microservice",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Microservice for Word file manipulations using [docxtemplater](https://github.com/open-xml-templating/docxtemplater).",
   "main": "lib/index.js",
   "license": "GPL-3.0",
